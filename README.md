@@ -1,26 +1,32 @@
-# Learning-Based Fuzzing of IoT Message Brokers
+# Supplemental Materials for "Learning-Based Fuzzing of IoT Message Brokers"
 
 
-## Different Brokers Configurations
+## Getting Started
 
-* VerneMQ
-    * docker run -p 1886:1883  -e "DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on" -e "DOCKER_VERNEMQ_ACCEPT_EULA=yes" -e "DOCKER_VERNEMQ_listener.tcp.allowed_protocol_versions=5" --name vernemq1 -d vernemq/vernemq
-* Mosquitto
+### MQTT Broker Configurations
+
+* VerneMQ 1.11.0
+    * https://github.com/vernemq/vernemq
+    * ```docker run -p 1886:1883  -e "DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on" -e "DOCKER_VERNEMQ_ACCEPT_EULA=yes" -e "DOCKER_VERNEMQ_listener.tcp.allowed_protocol_versions=5" --name vernemq1 -d vernemq/vernemq```
+* Eclipse Mosquitto 1.6.8
+    * https://mosquitto.org/download/
     * Port 1885
-    * /usr/local/sbin/mosquitto -p 1885
-* HiveMq
-    * Port 1884 selected in /conf/config.xml 
-    * ./Documents/hivemq-ce-2020.2/bin/run.sh
-* EMQ
-    * Port 1883
-    * emqx start
-* ejabbard
+    * ```mosquitto -p 1885```
+* HiveMq 2020.2
+    * https://github.com/hivemq/hivemq-community-edition
+    * Port 1884 (configuration in /hivemq-ce-2020.2/conf/config.xml)
+    * ```./hivemq-ce-2020.2/bin/run.sh```
+* EMQ X v4.0.0
+    * https://github.com/emqx/emqx
+    * ``` docker run -d --name emqx -p 1883:1883 -p 8083:8083 -p 8883:8883 -p 8084:8084 -p 18083:18083 emqx/emqx```
+* ejabberd 20.7.0
+    * https://github.com/processone/ejabberd
+    * Port 1887
     * disable authentication
-    * port 1997
     
-## To reporduce
+### Running the Tool
 
-- Once all brokers are installed and appropriate ports assigned to them, run
+- After the MQTT broker setup the tool can be executed.
 
 ```
     Linux/MAC
@@ -31,11 +37,11 @@
     ./gradlew.bat learningBasedFuzzing
 ```    
     
-## Short code explanation
+## Brief Comments on the Code
 
-Learning of the Mosquitto MQTT broker and it's use as a basis for further model-based fuzzing is found in the Main.java class.
+In the Main.java following steps are performed.
  
- - Create the MQTT client which will interact with the Mosquitto broker
+ - Creation of the Eclipse Mosquitto adapter and MQTT client which will interact with the Eclipse Mosquitto broker
  
 ``
 MQTTBrokerAdapterConfig mosquittoBrokerConfig =
@@ -43,26 +49,26 @@ MQTTBrokerAdapterConfig mosquittoBrokerConfig =
         MQTTClientWrapper mosquittoClient = new MQTTClientWrapper("c0", "mosquitto", mosquittoBrokerConfig);
 ``
 
- - Create input alphabeth for learning and corresponding mapper that translates abstract inputs to concrete ones
- - Start the experiment
+ - Definition of the input alphabet for learning and the corresponding mapper that translates abstract inputs to concrete inputs
+ - Learning of the Eclipse Mosquitto model
  - Results are saved in the 'learnedModels' folder
- - Comment out the last line if you want to skip learning and use model found in 'learnedModels' folder
+ - If you want to skip learning and use model in 'learnedModels' folder, remove (comment out) the last line:
 ```
-Learner mosquitoLearner = new Learner(new LearningMapper(mosquittoClient));
+Learner mosquittoLearner = new Learner(new LearningMapper(mosquittoClient));
  List<String> paperExample = Arrays.asList(
                 "connect", "disconnect",
                 "subscribe","publish", "unsubscribe",
                 "invalid");
 
-String experimentName = "MosquittoDemonstation";
-mosquitoLearner.learn(3000, experimentName, paperExample); // COMMENT OUT if you want to skip learning and usead already existing model
+String experimentName = "MosquittoModel";
+mosquittoLearner.learn(3000, experimentName, paperExample); // COMMENT OUT if you want to skip learning and use already existing model
 ```
-- Define configuration and clients for other brokers
-- Same input alphabet is used for the fuzzing mapper
-- Define number of random walks and its maximum lenght
+- Configuration of clients for other brokers
+- Same abstract input alphabet is used for the fuzzing mapper
+- Define number of random walks and its maximum length
 ```
 FuzzingBasedTesting fuzzingBasedTesting =
-                new FuzzingBasedTesting("learnedModels/MosquittoDemonstation.dot", clients, new DemoFuzzingMapper());
+                new FuzzingBasedTesting("learnedModels/MosquittoModel.dot", clients, new DemoFuzzingMapper());
 
 fuzzingBasedTesting.setInputAlphabet(paperExample);
 

@@ -17,7 +17,7 @@ public class Main {
                 new MQTTBrokerAdapterConfig(InetAddress.getByName("127.0.0.1"), 1885, 200, true, true, true);
         MQTTClientWrapper mosquittoClient = new MQTTClientWrapper("c0", "mosquitto", mosquittoBrokerConfig);
         // define the mapper used for learning (abstract -> concrete inputs)
-        Learner mosquitoLearner = new Learner(new LearningMapper(mosquittoClient));
+        Learner mosquittoLearner = new Learner(new LearningMapper(mosquittoClient));
 
         // learning input alphabet
         // 
@@ -28,9 +28,9 @@ public class Main {
                 "subscribe","publish", "unsubscribe",
                 "invalid");
 
-        String experimentName = "MosquittoDemonstation";
-        // learned model is saved to learnedModels/MosquittoDemonstation.dot
-        mosquitoLearner.learn(3000, experimentName, paperExample); // COMMENT OUT if you want to skip learning and usead already existing model
+        String experimentName = "MosquittoModel";
+        // learned model is saved to learnedModels/MosquittoModel.dot
+        mosquittoLearner.learn(3000, experimentName, paperExample); // COMMENT OUT if you want to skip learning and usead already existing model
 
         // Define other brokers that are going to be fuzzed
         MQTTClientWrapper hiveMQClient = new MQTTClientWrapper("c0", "hiveMQ",
@@ -47,7 +47,7 @@ public class Main {
 
         // define model that serves as a basis for fuzzing, broker setup data for each broker, and used fuzzing mapper
         FuzzingBasedTesting fuzzingBasedTesting =
-                new FuzzingBasedTesting("learnedModels/MosquittoDemonstation.dot", clients, new DemoFuzzingMapper());
+                new FuzzingBasedTesting("learnedModels/" + experimentName + ".dot", clients, new DemoFuzzingMapper());
 
         // same input alphabet used for learning
         fuzzingBasedTesting.setInputAlphabet(paperExample);
