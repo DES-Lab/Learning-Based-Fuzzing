@@ -68,4 +68,3 @@ fuzzingBasedTesting.setInputAlphabet(paperExample);
 
 fuzzingBasedTesting.randomWalkWithFuzzing(1000, 10);
 ```
-# Learning-Based-Fuzzing
