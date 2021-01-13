@@ -1,0 +1,28 @@
+digraph g {
+
+	s0 [shape="circle" label="0"];
+	s1 [shape="circle" label="1"];
+	s2 [shape="circle" label="2"];
+	s0 -> s1 [label="connect / CONNACK"];
+	s0 -> s0 [label="disconnect / CONCLOSED"];
+	s0 -> s0 [label="subscribe / CONCLOSED"];
+	s0 -> s0 [label="publish / CONCLOSED"];
+	s0 -> s0 [label="unsubscribe / CONCLOSED"];
+	s0 -> s0 [label="invalid / CONCLOSED"];
+	s1 -> s0 [label="connect / CONCLOSED"];
+	s1 -> s0 [label="disconnect / CONCLOSED"];
+	s1 -> s2 [label="subscribe / SUBACK"];
+	s1 -> s1 [label="publish / PUBACK"];
+	s1 -> s1 [label="unsubscribe / UNSUBACK"];
+	s1 -> s0 [label="invalid / CONCLOSED"];
+	s2 -> s0 [label="connect / CONCLOSED"];
+	s2 -> s0 [label="disconnect / CONCLOSED"];
+	s2 -> s2 [label="subscribe / SUBACK"];
+	s2 -> s2 [label="publish / PUBACK__PUBLISH"];
+	s2 -> s1 [label="unsubscribe / UNSUBACK"];
+	s2 -> s0 [label="invalid / CONCLOSED"];
+
+__start0 [label="" shape="none" width="0" height="0"];
+__start0 -> s0;
+
+}
